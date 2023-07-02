@@ -13,6 +13,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { PageLayout } from "~/components/layout";
+import { PostView } from "~/components/postView";
 
 const CreatePostWizard = () => {
 
@@ -61,27 +62,6 @@ const CreatePostWizard = () => {
     { isPosting && <div className="p-4"><LoadingSpinner /></div> }
   </div>
 
-}
-
-type PostWithUser = RouterOutputs["posts"]["getAll"][number];
-const PostView = (props: PostWithUser) => {
-
-  const { post, author } = props;
-
-  return (
-    <div key={post.id} className="flex gap-3 p-4 border-b border-slate-400">
-      <Image src={author.profileImageUrl} alt={`@${author.username}'s profile picture`} className="w-12 h-12 rounded-full gap-3" height={48} width={48} />
-      <div className="flex flex-col">
-        <div className="flex text-slate-400 font-bold gap-1">
-          <Link href={`/@${author.username}`}><span>{`@${author.username}`}</span></Link>
-          <Link href={`/post/${post.id}`}><span className="font-thin">{` · ${dayjs(
-            post.createdAt
-          ).fromNow()}`}</span></Link>
-        </div>
-        <span className="text-xl">{post.content}</span>
-      </div>
-    </div>
-  );
 }
 
 const Feed = () => {
