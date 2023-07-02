@@ -9,16 +9,36 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime)
 
 import Image from "next/image";
+import { useState } from "react";
 
 const CreatePostWizard = () => {
 
   const { user } = useUser();
 
+  const [ input, setInput ] = useState("");
+
+  const ctx = api.useContext();
+
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      void ctx.posts.getAll.invalidate();
+    },
+  });
+
   if (!user) return null;
 
   return <div className="flex gap-3 w-full">
     <Image src={user.profileImageUrl} alt="Profile image" className="w-12 h-12 rounded-full" height={48} width={48} />
-    <input placeholder="Type your post!" className="bg-transparent grow outline-none" />
+    <input 
+      placeholder="Type your post!"
+      className="bg-transparent grow outline-none"
+      type="text"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      disabled={isPosting}
+    />
+    <button onClick={() => mutate({content: input})}>Post</button>
   </div>
 
 }
@@ -38,7 +58,7 @@ const PostView = (props: PostWithUser) => {
             post.createdAt
           ).fromNow()}`}</span>
         </div>
-        <span>{post.content}</span>
+        <span className="text-xl">{post.content}</span>
       </div>
     </div>
   );
@@ -53,7 +73,7 @@ const Feed = () => {
 
   return (
     <div className="flex flex-col">
-      {data?.map((fullPost) => (
+      {data.map((fullPost) => (
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
     </div>
